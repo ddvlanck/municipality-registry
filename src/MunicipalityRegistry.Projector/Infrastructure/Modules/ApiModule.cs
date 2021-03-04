@@ -27,6 +27,7 @@ namespace MunicipalityRegistry.Projector.Infrastructure.Modules
     using MunicipalityRegistry.Projections.Legacy.MunicipalitySyndication;
     using MunicipalityRegistry.Projections.Legacy.MunicipalityVersion;
     using LastChangedListContextMigrationFactory = MunicipalityRegistry.Projections.LastChangedList.LastChangedListContextMigrationFactory;
+    using MunicipalityRegistry.Projections.Legacy.MunicipalityLinkedDataEventStream;
 
     public class ApiModule : Module
     {
@@ -124,7 +125,8 @@ namespace MunicipalityRegistry.Projector.Infrastructure.Modules
                 .RegisterProjections<MunicipalityListProjections, LegacyContext>(ConnectedProjectionSettings.Default)
                 .RegisterProjections<MunicipalityNameProjections, LegacyContext>(ConnectedProjectionSettings.Default)
                 .RegisterProjections<MunicipalitySyndicationProjections, LegacyContext>(ConnectedProjectionSettings.Default)
-                .RegisterProjections<MunicipalityVersionProjections, LegacyContext>(ConnectedProjectionSettings.Default);
+                .RegisterProjections<MunicipalityVersionProjections, LegacyContext>(ConnectedProjectionSettings.Default)
+                .RegisterProjections<MunicipalityLinkedDataEventStreamProjections, LegacyContext>(ConnectedProjectionSettings.Default);
         }
     }
 }

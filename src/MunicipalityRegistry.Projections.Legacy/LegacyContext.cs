@@ -4,6 +4,7 @@ namespace MunicipalityRegistry.Projections.Legacy
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using MunicipalityList;
+    using MunicipalityRegistry.Projections.Legacy.MunicipalityLinkedDataEventStream;
     using MunicipalitySyndication;
 
     public class LegacyContext : RunnerDbContext<LegacyContext>
@@ -15,6 +16,7 @@ namespace MunicipalityRegistry.Projections.Legacy
         public DbSet<MunicipalityVersion.MunicipalityVersion> MunicipalityVersions { get; set; }
         public DbSet<MunicipalityName.MunicipalityName> MunicipalityName { get; set; }
         public DbSet<MunicipalitySyndicationItem> MunicipalitySyndication { get; set; }
+        public DbSet<MunicipalityLinkedDataEventStreamItem> MunicipalityLinkedDataEventsStream { get; set; }
 
         // This needs to be here to please EF
         public LegacyContext() { }
