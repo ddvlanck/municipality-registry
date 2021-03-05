@@ -27,6 +27,7 @@ namespace MunicipalityRegistry.Api.Legacy.Municipality
     using Microsoft.Extensions.Options;
     using Microsoft.SyndicationFeed;
     using Microsoft.SyndicationFeed.Atom;
+    using MunicipalityRegistry.Api.Legacy.Infrastructure;
     using Projections.Legacy;
     using Query;
     using Requests;
@@ -262,6 +263,67 @@ namespace MunicipalityRegistry.Api.Legacy.Municipality
                                 GetGemeentenamenByLanguage(m, filtering.Language)))
                         .ToListAsync(cancellationToken),
                 });
+        }
+
+        /// <summary>
+        /// Vraag een lijst van wijzigingen van gemeentes op, semantisch geannoteerd (Linked Data Event Stream).
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="reponseOptions"></param>
+        /// <param name="request">De request in BOSA formaat.</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        [HttpGet("linked-data-event-stream")]
+        [ProducesResponseType(typeof(MunicipalityLinkedDataEventStreamResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+        [SwaggerResponseExample(StatusCodes.Status200OK, typeof(MunicipalityBosaResponseExamples))]
+        [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples))]
+        public async Task<IActionResult> LinkedDataEventStream(
+           [FromServices] IConfiguration configuration,
+           [FromServices] LegacyContext context,
+           [FromServices] IOptions<ResponseOptions> responseOptions,
+           CancellationToken cancellationToken = default)
+        {
+            var filtering = Request.ExtractFilteringRequest<MunicipalityLinkedDataEventStreamFilter>();
+            var sorting = Request.ExtractSortingRequest();
+            var pagination = Request.ExtractPaginationRequest();
+
+            var xPaginationHeader = Request.Headers["x-pagination"].ToString().Split(",");
+            var offset = Int32.Parse(xPaginationHeader[0]);
+            var pageSize = Int32.Parse(xPaginationHeader[1]);
+            var page = (offset / pageSize) + 1;
+
+            var municipalitiesPaged =
+                new MunicipalityLinkedDataEventStreamQuery(context)
+                .Fetch(filtering, sorting, pagination);
+
+            var linkedDataEventStreamConfiguration = new LinkedDataEventStreamConfiguration(configuration.GetSection("LinkedDataEventStream"));
+
+            var municipalitiesVersionObjects = municipalitiesPaged
+                .Items
+                .Select(x => new MunicipalityVersionObject(
+                    linkedDataEventStreamConfiguration,
+                    x.Position,
+                    x.ChangeType,
+                    x.GeneratedAtTime,
+                    x.NisCode,
+                    x.Status,
+                    x.OfficialLanguages,
+                    x.FacilitiesLanguages,
+                    x.NameDutch,
+                    x.NameFrench,
+                    x.NameEnglish,
+                    x.NameGerman))
+                .ToList();
+
+            return Ok(new MunicipalityLinkedDataEventStreamResponse
+            {
+                Id = MunicipalityLinkedDataEventStreamMetadata.GetPageIdentifier(linkedDataEventStreamConfiguration, page),
+                CollectionLink = MunicipalityLinkedDataEventStreamMetadata.GetCollectionLink(linkedDataEventStreamConfiguration),
+                MunicipalityShape = new Uri($"{linkedDataEventStreamConfiguration.ApiEndpoint}/shape"),
+                HypermediaControls = MunicipalityLinkedDataEventStreamMetadata.GetHypermediaControls(municipalitiesVersionObjects, linkedDataEventStreamConfiguration, page, pageSize),
+                Municipalities = municipalitiesVersionObjects
+            });
         }
 
         private static IEnumerable<GeografischeNaam> GetGemeentenamenByLanguage(MunicipalityBosaQueryResult municipality, Language? language)

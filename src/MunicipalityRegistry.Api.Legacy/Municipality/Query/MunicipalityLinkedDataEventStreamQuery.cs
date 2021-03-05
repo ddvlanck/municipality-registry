@@ -54,11 +54,11 @@ namespace MunicipalityRegistry.Api.Legacy.Municipality.Query
             string nisCode,
             MunicipalityStatus status,
             IEnumerable<Language> officialLanguages,
-            IEnumerable<Language> facilitiesLanguages,
-            string nameDutch,
-            string nameFrench,
-            string nameEnglish,
-            string nameGerman) : this(
+            IEnumerable<Language>? facilitiesLanguages,
+            string? nameDutch,
+            string? nameFrench,
+            string? nameEnglish,
+            string? nameGerman) : this(
                 position,
                 changeType,
                 generatedAtTime,
@@ -104,21 +104,23 @@ namespace MunicipalityRegistry.Api.Legacy.Municipality.Query
         }
 
         protected override IQueryable<MunicipalityLinkedDataEventStreamItem> Filter(FilteringHeader<MunicipalityLinkedDataEventStreamFilter> filtering)
-            => _context
-                .MunicipalityLinkedDataEventsStream
-                .Where(x => x.IsComplete == true)
-                .OrderBy(x => x.Position)
-                .AsNoTracking();
+            =>_context
+            .MunicipalityLinkedDataEventsStream
+            .Where(x => x.IsComplete == true)
+            .OrderBy(x => x.EventGeneratedAtTimeAsDatetimeOffset)
+            .ThenBy(x => x.Position)
+            .AsNoTracking();
     }
 
     internal class MunicipalityLinkedDataEventStreamSorting: ISorting
     {
         public IEnumerable<string> SortableFields { get; } = new[]
         {
+            nameof(MunicipalityLinkedDataEventStreamItem.EventGeneratedAtTimeAsDatetimeOffset),
             nameof(MunicipalityLinkedDataEventStreamItem.Position)
         };
 
-        public SortingHeader DefaultSortingHeader { get; } = new SortingHeader(nameof(MunicipalityLinkedDataEventStreamItem.Position), SortOrder.Ascending);
+        public SortingHeader DefaultSortingHeader { get; } = new SortingHeader(nameof(MunicipalityLinkedDataEventStreamItem.EventGeneratedAtTimeAsDatetimeOffset), SortOrder.Ascending);
     }
 
     public class MunicipalityLinkedDataEventStreamFilter
