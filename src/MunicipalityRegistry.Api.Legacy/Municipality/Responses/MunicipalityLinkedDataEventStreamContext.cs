@@ -67,7 +67,7 @@ namespace MunicipalityRegistry.Api.Legacy.Municipality.Responses
         [DataMember(Name = "gemeentenaam")]
         public readonly PropertyOverride MunicipalityName = new PropertyOverride
         {
-            Id = "br:Gemeente.gemeentenaam",
+            Id = "rdf:label",
             Type = "rdf:langString"
         };
 
@@ -120,5 +120,50 @@ namespace MunicipalityRegistry.Api.Legacy.Municipality.Responses
 
         [JsonProperty("@type")]
         public string Type { get; set; }
+    }
+
+    public class MunicipalityShaclContext
+    {
+        [JsonProperty("sh")]
+        public readonly Uri ShaclUri = new Uri("https://www.w3.org/ns/shacl#");
+
+        [JsonProperty("rdf")]
+        public readonly Uri RdfUri = new Uri("http://www.w3.org/1999/02/22-rdf-syntax-ns#");
+
+        [JsonProperty("xsd")]
+        public readonly Uri XmlSchemaUri = new Uri("http://www.w3.org/2001/XMLSchema#");
+
+        [JsonProperty("skos")]
+        public readonly Uri CodelistUri = new Uri("http://www.w3.org/2004/02/skos/core#");
+
+        [JsonProperty("prov")]
+        public readonly Uri ProvenanceUri = new Uri("http://www.w3.org/ns/prov#");
+
+        [JsonProperty("dct")]
+        public readonly Uri MetadataTermsUri = new Uri("http://purl.org/dc/terms/");
+
+        [JsonProperty("adms")]
+        public readonly Uri AssetDescription = new Uri("http://www.w3.org/ns/adms#");
+
+        [JsonProperty("adres")]
+        public readonly Uri OsloAddressUri = new Uri("https://data.vlaanderen.be/ns/adres#");
+
+        [JsonProperty("br")]
+        public readonly Uri BaseRegistryImplementationModelUri = new Uri("https://basisregisters.vlaanderen.be/ns/adres#");
+
+        [JsonProperty("sh:datatype")]
+        public readonly ShaclPropertyExtension DataTypeExtended = new ShaclPropertyExtension();
+
+        [JsonProperty("sh:nodeKind")]
+        public readonly ShaclPropertyExtension NodeKindExnteded = new ShaclPropertyExtension();
+
+        [JsonProperty("sh:path")]
+        public readonly ShaclPropertyExtension PathExtended = new ShaclPropertyExtension();
+    }
+
+    public class ShaclPropertyExtension
+    {
+        [JsonProperty("@type")]
+        private readonly string Type = "@id";
     }
 }

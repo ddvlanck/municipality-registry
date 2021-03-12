@@ -268,9 +268,9 @@ namespace MunicipalityRegistry.Api.Legacy.Municipality
         /// <summary>
         /// Vraag een lijst van wijzigingen van gemeentes op, semantisch geannoteerd (Linked Data Event Stream).
         /// </summary>
+        /// <param name="configuration"></param>
         /// <param name="context"></param>
         /// <param name="reponseOptions"></param>
-        /// <param name="request">De request in BOSA formaat.</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         [HttpGet("linked-data-event-stream")]
@@ -321,6 +321,27 @@ namespace MunicipalityRegistry.Api.Legacy.Municipality
                 MunicipalityShape = MunicipalityLinkedDataEventStreamMetadata.GetShapeUri(configuration),
                 HypermediaControls = MunicipalityLinkedDataEventStreamMetadata.GetHypermediaControls(municipalitiesVersionObjects, configuration, page, pageSize),
                 Municipalities = municipalitiesVersionObjects
+            });
+        }
+
+        /// <summary>
+        /// Vraag de Shacl Shape van gemeentes op.
+        /// </summary>
+        /// <param name="configuration"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        [HttpGet("linked-data-event-stream/shape")]
+        [ProducesResponseType(typeof(MunicipalityLinkedDataEventStreamResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+        [SwaggerResponseExample(StatusCodes.Status200OK, typeof(MunicipalityBosaResponseExamples))]
+        [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples))]
+        public async Task<IActionResult> Shape(
+           [FromServices] LinkedDataEventStreamConfiguration configuration,
+           CancellationToken cancellationToken = default)
+        {
+            return Ok(new MunicipalityShaclShapeResponse
+            {
+                Id = MunicipalityLinkedDataEventStreamMetadata.GetShapeUri(configuration)
             });
         }
 
