@@ -15,6 +15,9 @@ namespace MunicipalityRegistry.Api.Legacy.Municipality.Responses
         public static Uri GetCollectionLink(LinkedDataEventStreamConfiguration configuration)
             => new Uri($"{configuration.ApiEndpoint}");
 
+        public static Uri GetShapeUri(LinkedDataEventStreamConfiguration configuration)
+            => new Uri($"{configuration.ApiEndpoint}/shape");
+
         public static List<HypermediaControl>? GetHypermediaControls(List<MunicipalityVersionObject> items, LinkedDataEventStreamConfiguration configuration, int page, int pageSize)
         {
             List<HypermediaControl> controls = new List<HypermediaControl>();

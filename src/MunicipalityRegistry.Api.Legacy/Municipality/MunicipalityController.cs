@@ -279,7 +279,7 @@ namespace MunicipalityRegistry.Api.Legacy.Municipality
         [SwaggerResponseExample(StatusCodes.Status200OK, typeof(MunicipalityBosaResponseExamples))]
         [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples))]
         public async Task<IActionResult> LinkedDataEventStream(
-           [FromServices] IConfiguration configuration,
+           [FromServices] LinkedDataEventStreamConfiguration configuration,
            [FromServices] LegacyContext context,
            [FromServices] IOptions<ResponseOptions> responseOptions,
            CancellationToken cancellationToken = default)
@@ -297,12 +297,10 @@ namespace MunicipalityRegistry.Api.Legacy.Municipality
                 new MunicipalityLinkedDataEventStreamQuery(context)
                 .Fetch(filtering, sorting, pagination);
 
-            var linkedDataEventStreamConfiguration = new LinkedDataEventStreamConfiguration(configuration.GetSection("LinkedDataEventStream"));
-
             var municipalitiesVersionObjects = municipalitiesPaged
                 .Items
                 .Select(x => new MunicipalityVersionObject(
-                    linkedDataEventStreamConfiguration,
+                    configuration,
                     x.Position,
                     x.ChangeType,
                     x.GeneratedAtTime,
@@ -318,10 +316,10 @@ namespace MunicipalityRegistry.Api.Legacy.Municipality
 
             return Ok(new MunicipalityLinkedDataEventStreamResponse
             {
-                Id = MunicipalityLinkedDataEventStreamMetadata.GetPageIdentifier(linkedDataEventStreamConfiguration, page),
-                CollectionLink = MunicipalityLinkedDataEventStreamMetadata.GetCollectionLink(linkedDataEventStreamConfiguration),
-                MunicipalityShape = new Uri($"{linkedDataEventStreamConfiguration.ApiEndpoint}/shape"),
-                HypermediaControls = MunicipalityLinkedDataEventStreamMetadata.GetHypermediaControls(municipalitiesVersionObjects, linkedDataEventStreamConfiguration, page, pageSize),
+                Id = MunicipalityLinkedDataEventStreamMetadata.GetPageIdentifier(configuration, page),
+                CollectionLink = MunicipalityLinkedDataEventStreamMetadata.GetCollectionLink(configuration),
+                MunicipalityShape = MunicipalityLinkedDataEventStreamMetadata.GetShapeUri(configuration),
+                HypermediaControls = MunicipalityLinkedDataEventStreamMetadata.GetHypermediaControls(municipalitiesVersionObjects, configuration, page, pageSize),
                 Municipalities = municipalitiesVersionObjects
             });
         }

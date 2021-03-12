@@ -36,6 +36,12 @@ namespace MunicipalityRegistry.Api.Legacy.Infrastructure.Modules
                 .AsSelf();
 
             containerBuilder
+                .Register(context =>
+                    new LinkedDataEventStreamConfiguration(_configuration.GetSection("LinkedDataEventStream")))
+                .As<LinkedDataEventStreamConfiguration>()
+                .SingleInstance();
+
+            containerBuilder
                 .Populate(_services);
         }
     }

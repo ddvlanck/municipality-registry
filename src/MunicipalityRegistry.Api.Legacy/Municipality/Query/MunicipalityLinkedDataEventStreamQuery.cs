@@ -107,8 +107,7 @@ namespace MunicipalityRegistry.Api.Legacy.Municipality.Query
             =>_context
             .MunicipalityLinkedDataEventsStream
             .Where(x => x.IsComplete == true)
-            .OrderBy(x => x.EventGeneratedAtTimeAsDatetimeOffset)
-            .ThenBy(x => x.Position)
+            .OrderBy(x => x.Position)
             .AsNoTracking();
     }
 
@@ -116,11 +115,10 @@ namespace MunicipalityRegistry.Api.Legacy.Municipality.Query
     {
         public IEnumerable<string> SortableFields { get; } = new[]
         {
-            nameof(MunicipalityLinkedDataEventStreamItem.EventGeneratedAtTimeAsDatetimeOffset),
             nameof(MunicipalityLinkedDataEventStreamItem.Position)
         };
 
-        public SortingHeader DefaultSortingHeader { get; } = new SortingHeader(nameof(MunicipalityLinkedDataEventStreamItem.EventGeneratedAtTimeAsDatetimeOffset), SortOrder.Ascending);
+        public SortingHeader DefaultSortingHeader { get; } = new SortingHeader(nameof(MunicipalityLinkedDataEventStreamItem.Position), SortOrder.Ascending);
     }
 
     public class MunicipalityLinkedDataEventStreamFilter
