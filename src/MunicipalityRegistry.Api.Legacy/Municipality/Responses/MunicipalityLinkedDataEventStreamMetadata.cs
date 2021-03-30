@@ -71,13 +71,4 @@ namespace MunicipalityRegistry.Api.Legacy.Municipality.Responses
         [JsonProperty("tree:node")]
         public Uri Node { get; set; }
     }
-
-    public class TreeValue
-    {
-        [JsonProperty("@value")]
-        public DateTimeOffset Value { get; set; }
-
-        [JsonProperty("@type")]
-        public string Type { get; set; }
-    }
 }
