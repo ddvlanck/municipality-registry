@@ -4,12 +4,11 @@ namespace MunicipalityRegistry.Projections.Legacy.MunicipalityLinkedDataEventStr
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
     using MunicipalityRegistry.Infrastructure;
+    using Newtonsoft.Json;
     using NodaTime;
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
+    using System.Security.Cryptography;
     using System.Text;
-    using System.Threading.Tasks;
 
     public class MunicipalityLinkedDataEventStreamItem : MunicipalityLanguagesBase
     {
@@ -35,6 +34,7 @@ namespace MunicipalityRegistry.Projections.Legacy.MunicipalityLinkedDataEventStr
         }
 
         public bool IsComplete { get; set; }
+        public string ObjectHash { get; set; }
 
         public MunicipalityLinkedDataEventStreamItem CloneAndApplyEventInfo(
             long newPosition,
@@ -64,18 +64,29 @@ namespace MunicipalityRegistry.Projections.Legacy.MunicipalityLinkedDataEventStr
             };
 
             editFunc(newItem);
+            newItem.SetObjectHash();
 
             return newItem;
+        }
+
+        public void SetObjectHash()
+        {
+            ObjectHash = string.Empty;
+            var objectString = JsonConvert.SerializeObject(this);
+
+            using var md5Hash = MD5.Create();
+            var hashBytes = md5Hash.ComputeHash(Encoding.UTF8.GetBytes(objectString));
+            ObjectHash = BitConverter.ToString(hashBytes).Replace("-", string.Empty);
         }
     }
 
     public class MunicipalityLinkedDataEventStreamItemConfiguration : IEntityTypeConfiguration<MunicipalityLinkedDataEventStreamItem>
     {
-        private const string TableName = "MunicipalityLinkedDataEventStream";
+        private const string TableName = "Municipality";
 
         public void Configure(EntityTypeBuilder<MunicipalityLinkedDataEventStreamItem> b)
         {
-            b.ToTable(TableName, Schema.Legacy)
+            b.ToTable(TableName, Schema.LinkedDataEventStream)
                .HasKey(x => x.Position)
                .IsClustered();
 
@@ -100,6 +111,7 @@ namespace MunicipalityRegistry.Projections.Legacy.MunicipalityLinkedDataEventStr
                 .HasColumnName("FacilitiesLanguages");
 
             b.Property(x => x.EventGeneratedAtTimeAsDatetimeOffset).HasColumnName("EventGeneratedAtTime");
+            b.Property(x => x.ObjectHash).HasColumnName("ObjectIdentifier");
 
             b.Ignore(x => x.EventGeneratedAtTime);
             b.Ignore(x => x.OfficialLanguages);

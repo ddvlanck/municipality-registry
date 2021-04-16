@@ -10,8 +10,8 @@ using MunicipalityRegistry.Projections.Legacy;
 namespace MunicipalityRegistry.Projections.Legacy.Migrations
 {
     [DbContext(typeof(LegacyContext))]
-    [Migration("20210304184915_AddTableForLinkedDataEventStream")]
-    partial class AddTableForLinkedDataEventStream
+    [Migration("20210416071057_AddLinkedDataEventStream")]
+    partial class AddLinkedDataEventStream
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -97,13 +97,13 @@ namespace MunicipalityRegistry.Projections.Legacy.Migrations
                     b.Property<string>("ChangeType")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTimeOffset>("EventGeneratedAtTimeAsDatetimeOffset")
+                        .HasColumnType("datetimeoffset")
+                        .HasColumnName("EventGeneratedAtTime");
+
                     b.Property<string>("FacilitiesLanguagesAsString")
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("FacilitiesLanguages");
-
-                    b.Property<DateTimeOffset>("GeneratedAtTime")
-                        .HasColumnType("datetimeoffset")
-                        .HasColumnName("EventGeneratedAtTime");
 
                     b.Property<bool>("IsComplete")
                         .HasColumnType("bit");
@@ -127,6 +127,11 @@ namespace MunicipalityRegistry.Projections.Legacy.Migrations
                     b.Property<string>("NisCode")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ObjectHash")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("ObjectIdentifier");
+
                     b.Property<string>("OfficialLanguagesAsString")
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("OfficialLanguages");
@@ -140,10 +145,10 @@ namespace MunicipalityRegistry.Projections.Legacy.Migrations
                     b.HasIndex("MunicipalityId");
 
                     b.HasIndex("Position")
-                        .HasDatabaseName("CI_MunicipalityLinkedDataEventStream_Position")
+                        .HasDatabaseName("CI_Municipality_Position")
                         .HasAnnotation("SqlServer:ColumnStoreIndex", "");
 
-                    b.ToTable("MunicipalityLinkedDataEventStream", "MunicipalityRegistryLegacy");
+                    b.ToTable("Municipality", "MunicipalityRegistryLdes");
                 });
 
             modelBuilder.Entity("MunicipalityRegistry.Projections.Legacy.MunicipalityList.MunicipalityListItem", b =>

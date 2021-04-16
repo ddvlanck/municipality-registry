@@ -95,13 +95,13 @@ namespace MunicipalityRegistry.Projections.Legacy.Migrations
                     b.Property<string>("ChangeType")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTimeOffset>("EventGeneratedAtTimeAsDatetimeOffset")
+                        .HasColumnType("datetimeoffset")
+                        .HasColumnName("EventGeneratedAtTime");
+
                     b.Property<string>("FacilitiesLanguagesAsString")
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("FacilitiesLanguages");
-
-                    b.Property<DateTimeOffset>("GeneratedAtTime")
-                        .HasColumnType("datetimeoffset")
-                        .HasColumnName("EventGeneratedAtTime");
 
                     b.Property<bool>("IsComplete")
                         .HasColumnType("bit");
@@ -125,6 +125,11 @@ namespace MunicipalityRegistry.Projections.Legacy.Migrations
                     b.Property<string>("NisCode")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ObjectHash")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("ObjectIdentifier");
+
                     b.Property<string>("OfficialLanguagesAsString")
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("OfficialLanguages");
@@ -138,10 +143,10 @@ namespace MunicipalityRegistry.Projections.Legacy.Migrations
                     b.HasIndex("MunicipalityId");
 
                     b.HasIndex("Position")
-                        .HasDatabaseName("CI_MunicipalityLinkedDataEventStream_Position")
+                        .HasDatabaseName("CI_Municipality_Position")
                         .HasAnnotation("SqlServer:ColumnStoreIndex", "");
 
-                    b.ToTable("MunicipalityLinkedDataEventStream", "MunicipalityRegistryLegacy");
+                    b.ToTable("Municipality", "MunicipalityRegistryLdes");
                 });
 
             modelBuilder.Entity("MunicipalityRegistry.Projections.Legacy.MunicipalityList.MunicipalityListItem", b =>

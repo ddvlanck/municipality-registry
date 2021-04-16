@@ -7,6 +7,7 @@ namespace MunicipalityRegistry.Infrastructure
 
         public const string Extract = "MunicipalityRegistryExtract";
         public const string Legacy = "MunicipalityRegistryLegacy";
+        public const string LinkedDataEventStream = "MunicipalityRegistryLdes";
     }
 
     public class MigrationTables

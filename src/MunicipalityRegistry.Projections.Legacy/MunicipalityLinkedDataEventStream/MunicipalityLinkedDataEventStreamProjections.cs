@@ -25,6 +25,7 @@ namespace MunicipalityRegistry.Projections.Legacy.MunicipalityLinkedDataEventStr
                 };
 
                 newMunicipalityLinkedDataEventStreamItem.SetIsComplete();
+                newMunicipalityLinkedDataEventStreamItem.SetObjectHash();
 
                 await context
                     .MunicipalityLinkedDataEventsStream
